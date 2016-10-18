@@ -1,0 +1,31 @@
+{
+  "name": "spider-for-whu-lessons",
+  "version": "0.0.1",
+  "description": "A spider for whu, which can get all the lessons' information",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IwYvI/spider-for-whu-lessons.git"
+  },
+  "keywords": [
+    "spider",
+    "whu"
+  ],
+  "author": "IwYvI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IwYvI/spider-for-whu-lessons/issues"
+  },
+  "homepage": "https://github.com/IwYvI/spider-for-whu-lessons#readme",
+  "dependencies": {
+    "bufferhelper": "^0.2.1",
+    "cheerio": "^0.22.0",
+    "curry": "^1.2.0",
+    "iconv-lite": "^0.4.13",
+    "log4js": "^0.6.38",
+    "request": "^2.75.0"
+  }
+}
