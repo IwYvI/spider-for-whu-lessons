@@ -1,3 +1,10 @@
+/**
+ * 分析器
+ * 
+ * @param {any} selector
+ * @param {any} dataSet
+ */
+
 function analyzer(selector, dataSet) {
   this._init(selector, dataSet);
 }
@@ -10,19 +17,20 @@ analyzer.prototype = {
     try {
       var _this = this;
       var content = $('.listTable tr');
-      content.each(function (index, el) {
+      content.each(function (index) {
         if (index !== 0) {
           var count = 0;
           var detail = {};
-          $(this).children().each(function (index, el) {
+          $(this).children().each(function () {
             var text = $(this).text().replace(/[\r\n\t\/ ]/g, "");
             if (!text || text == " ") {
               text = "NULL";
             }
             var kind = _this.selector[count];
+            // 若selector为对象则取子元素的内容
             if (typeof (kind) == "object") {
               if (kind[1] && kind[1] === true) {
-                $(this).children().each(function (index, el) {
+                $(this).children().each(function () {
                   text = $(this).text().replace(/[\r\n\t\/ ]/g, "");
                   if (!text) {
                     text = "NULL";

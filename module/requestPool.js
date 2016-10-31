@@ -5,6 +5,13 @@ var log4js = require('log4js');
 log4js.configure("log4js.json");
 var logger = log4js.getLogger();
 
+/**
+ * 请求池
+ * 
+ * @param {any} cookie
+ * @param {any} thread
+ * @param {any} finishCallback
+ */
 function requestPool(cookie, thread, finishCallback) {
   this._init(cookie, thread, finishCallback);
 }
@@ -23,31 +30,35 @@ requestPool.prototype = {
   },
   _finish: function (req, errStatus, err) {
     req.isFinished = true;
+    this.queueCount--;
+    this.finishCount++;
     if (errStatus) {
       req.isError = true;
       var errorMsg = req.errorMsg;
       if (err) {
         errorMsg += "，服务器连接失败";
+        if(req.retryCount<5){
+          this.push(req.options.url, req.errorMsg, req.callback, req.retryCount + 1);
+          errorMsg +="，第" + req.retryCount + "次重试";
+        }
+        logger.error(errorMsg);
       } else {
         errorMsg = "session过期";
         logger.error(errorMsg);
         this.abort();
         return;
       }
-      logger.error(errorMsg);
-      // 添加错误日志部分
+    }else{
+      logger.trace("已完成----" + (this.finishCount / this.requests.length * 100).toFixed(2) + "%");
     }
-    this.queueCount--;
-    this.finishCount++;
-    // console.log("已完成----" + (this.finishCount / this.requests.length * 100).toFixed(2) + "%");
-    logger.trace("已完成----" + (this.finishCount / this.requests.length * 100).toFixed(2) + "%");
     this.execute();
   },
-  push: function (url, errorMsg, callback) {
+  push: function (url, errorMsg, callback, retryCount) {
     var value = {
       isFinished: false,
       isStarted: false,
       isError: false,
+      retryCount: retryCount || 0,
       options: {
         method: "get",
         url: url,
@@ -63,6 +74,7 @@ requestPool.prototype = {
     this.requests.push(value);
     this.execute();
   },
+  // 终止所有请求
   abort: function () {
     logger.info("终止爬取");
     this.requests.forEach(function (el) {
@@ -71,6 +83,7 @@ requestPool.prototype = {
       }
     });
   },
+  // 重置
   reset: function () {
     this.abort();
     this.requests.length = 0;
@@ -84,9 +97,6 @@ requestPool.prototype = {
         this.queueCount++;
         var newRequest = this.requests[this.count];
         this.count++;
-        // while (newRequest.isStarted) {
-        //   newRequest = this.requests[this.count++];
-        // }
         newRequest.isStarted = true;
 
         var buffer = new BufferHelper();

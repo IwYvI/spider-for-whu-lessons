@@ -23,7 +23,7 @@ getInformation.prototype = {
       var _this = this;
       var $ = cheerio.load(data);
       var title = $("title").text();
-      if(title.indexof("教务部")){
+      if(title.indexOf("教务") != -1){
         return false;
       }
       var pageLink = $(".total_count a");

@@ -3,15 +3,18 @@ var DataSet = require("./module/dataSet.js");
 var query = require("./app/changeOption.js");
 
 var getLesson = GetLesson(
-	"JSESSIONID=4A905112C17B89C0F46FEAE28B01DADE.tomcat2",
-	"edd04d3b-9e0c-3c48-bc79-884c566ceb21"
+	"JSESSIONID=414D2120E23841B4C9C04A6B24C041D9.tomcat2",
+	"1bd32be5-dd71-3410-91d0-a3e9a7ea245"
 );
 
-// var getPubRequiredLsn = getLesson.getPubRequiredLsn("output/test.json");
-// getPubRequiredLsn.execute();
+var getPubRequiredLsn = getLesson.getPubRequiredLsn("output/pubrequiredlsn.json");
+getPubRequiredLsn.execute();
 
-var getPlanLsn = getLesson.getPlanLsn("output/plan.json", query);
-getPlanLsn.execute();
+// var getPlanLsn = getLesson.getPlanLsn("output/planlsn.json", query);
+// getPlanLsn.execute();
+
+// var getPubLsn = getLesson.getPubLsn("output/publsn.json");
+// getPubLsn.execute();
 
 // DataSet.importJson("output/bba.json", function (dataSet) {
 // 	dataSet.exportSql("output/ppp.sql");

@@ -1,7 +1,14 @@
 var fs = require("fs");
 var log4js = require('log4js');
+log4js.configure("log4js.json");
 var logger = log4js.getLogger();
 
+/**
+ * 数据集
+ * 
+ * @param {any} name
+ * @param {any} template
+ */
 function dataSet(name, template) {
   this._init(name, template);
 }
@@ -14,12 +21,15 @@ dataSet.prototype = {
       throw new Error("no template");
     }
   },
+  // 添加数据
   add: function (json) {
     this.data.push(json);
   },
+  // 获得数据数量
   getLength: function () {
     return this.data.length;
   },
+  // 按照模板处理数据顺序，若type为1时转义'
   _filter: function (data, type) {
     var result = [];
     var _this = this;
@@ -36,11 +46,13 @@ dataSet.prototype = {
     });
     return result;
   },
+  // 获取json字符串
   _getString: function () {
     var result = {};
     result[this.name] = this._filter(this.data);
     return JSON.stringify(result);
   },
+  // 获取sql字符串
   _getSql: function (tableName) {
     var value = this._filter(this.data, 1);
     var result = [];
@@ -53,6 +65,7 @@ dataSet.prototype = {
     });
     return "INSERT INTO '" + tableName + "' VALUES " + result.join(",") + ";";
   },
+  // 保存到文件
   _saveFile: function (fileName, content) {
     fs.writeFile(fileName, content, function (err) {
       if (err) {
@@ -61,15 +74,29 @@ dataSet.prototype = {
       logger.info(fileName + "文件已保存");
     })
   },
+  _getFileName: function(fileName, extension){
+    var date = new Date();
+    extension = "." + extension;
+    var dateStr = "[" +[date.getFullYear(), date.getMonth()+1, date.getDate()].join("-") + " " + date.getHours() + "-" + ("0" + date.getMinutes()).slice(-2) + "]";
+    if(fileName){  
+      if(fileName.indexOf(extension)){
+        fileName = fileName.replace(extension, dateStr + extension);
+      }else{
+        fileName += dateStr + extension;
+      }
+    }else{
+      fileName = this.name + dateStr + extension;
+    }
+    return fileName;
+  },
   exportJson: function (fileName) {
-    var name = fileName ? fileName : (this.name + ".json");
-    this._saveFile(name, this._getString());
+    this._saveFile(this._getFileName(fileName, "json"), this._getString());
   },
   exportSql: function (fileName, tableName) {
-    var name = fileName ? fileName : (this.name + ".sql");
-    this._saveFile(name, this._getSql(tableName ? tableName : this.name));
+    this._saveFile(this._getFileName(fileName, "sql"), this._getSql(tableName ? tableName : this.name));
   },
 }
+// 导入json
 dataSet.importJson = function (fileName, callback) {
   fs.readFile(fileName, 'utf-8', function (err, data) {
     if (err) {
