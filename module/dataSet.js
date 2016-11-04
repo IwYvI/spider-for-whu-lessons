@@ -120,7 +120,7 @@ dataSet.importJson = function (fileName, callback) {
         }
       }
       newDataSet = new dataSet(newName, newTemplate);
-      fileContent.forEach(function (el, index) {
+      fileContent.forEach(function (el) {
         newDataSet.add(el);
       });
       logger.info("文件读取成功");

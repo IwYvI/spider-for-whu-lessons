@@ -25,6 +25,7 @@
     "cheerio": "^0.22.0",
     "crypto-js": "^3.1.8",
     "curry": "^1.2.0",
+    "events": "^1.1.1",
     "iconv-lite": "^0.4.13",
     "log4js": "^0.6.38",
     "prompt": "^1.0.0",

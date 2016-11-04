@@ -24,12 +24,10 @@ function cmd(option) {
     execute: function () {
       login(function (status, result) {
         if (status) {
-          spider.setCsrftoken = result || function () {
-            // logger.warn("未获取到csrftoken");
-            throw new Error("未获取到csrftoken");
-          };
-          console.log(spider.cookie);
-          console.log(spider.csrftoken);
+          spider.setCsrftoken(result);
+          // console.log(spider.cookie);
+          // console.log(spider.csrftoken);
+          main();
         }
       });
     }
@@ -43,11 +41,13 @@ function login(callback) {
         xdvfb = result;
         spider.login(userid, password, xdvfb, function (status) {
           if (!status) {
-            throw new Error("登陆时连接服务器出错");
+            logger.error("登陆时连接服务器出错");
+            return;
           }
           spider.requestResource(Spider.ADDRESS.main, function (status, result) {
             if (!status) {
-              throw new Error("获取首页信息时连接服务器出错");
+              logger.error("获取首页信息时连接服务器出错");
+              return;
             }
             var $ = cheerio.load(result);
             if (result.indexOf("csrftoken") == -1) {
@@ -55,10 +55,10 @@ function login(callback) {
               console.log(msg);
               // logger.warn("某个地方出错，需要重新登陆");
               login(callback);
+              return;
             } else {
-              var tokenString = $("li#btn1").first().attr("onlick");
-              console.log(tokenString);
-              var tokenArray = tokenString.match(/(\\w+)(-\\w+)+/);
+              var tokenString = $("li#btn1").first().attr("onclick");
+              var tokenArray = tokenString.match(/(\w+)(-\w+)+/);
               var token = "";
               if (tokenArray) {
                 token = tokenArray[0];
@@ -72,6 +72,35 @@ function login(callback) {
     }
   })
 }
+
+function main() {
+  var filePath = "output/";
+  input("请输入爬取类型（0：公选，1：公必，2：专业课）", function (result) {
+    var type = result;
+    switch (type) {
+      case '0':
+        filePath += "publsn.json";
+        break;
+      case '1':
+        filePath += "pubrequiredlsn.json";
+        break;
+      case '2':
+        filePath += "planlsn.json";
+        break;
+      default:
+        logger.warn("请输入正确的类型");
+        main();
+        return;
+    }
+    input("请输入保存路径及文件名，默认为" + filePath, function (result) {
+      if(result){
+        filePath = result;
+      }
+      spider.start(type, filePath);
+    });
+  });
+}
+
 
 function input(hint, callback) {
   prompt.start();

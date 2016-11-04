@@ -49,7 +49,6 @@ getLesson.prototype = {
   },
   execute: function () {
     logger.info("开始爬取：" + this.description);
-    // console.log("开始爬取：" + this.description);
     for (var i = 0; i < this.info.length; i++) {
       this.info[i].execute();
     }
@@ -191,23 +190,7 @@ var getPlanLsn = function (cookie, csrftoken, ip, fileName, query) {
     ],
     baseUrl: "http://" + ip + "/servlet/Svlt_QueryPlanLsn",
     defaultQuery: ["subject", "grade"],
-    query: function (q) {
-      var result = [];
-      q.sub.forEach(function (el, index) {
-        var subject = el.aValue;
-        var subjectStr = el.aText;
-        if (subject != "End") {
-          q.grade.forEach(function (el, index) {
-            var grade = el.aValue;
-            var gradeStr = el.aText;
-            if (grade != "End") {
-              result.push([subject, grade, gradeStr + subjectStr]);
-            }
-          });
-        }
-      })
-      return result;
-    }(query),
+    query: query,
     csrftoken: csrftoken,
     description: "专业课",
     finishCallback: function (fileName) {
@@ -222,18 +205,6 @@ var getPlanLsn = function (cookie, csrftoken, ip, fileName, query) {
 }
 
 module.exports = function (cookie, csrftoken, ip) {
-  // if (!ip) {
-  //   ip = "210.42.121.132";
-  //   logger.warn("没有配置ip，使用默认值132");
-  //   // console.log("没有配置ip，使用默认值132");
-  //   // throw new Error("缺少ip");
-  // }
-  // if (!cookie) {
-  //   throw new Error("缺少cookie");
-  // }
-  // if (!csrftoken) {
-  //   throw new Error("缺少csrftoken");
-  // }
   return {
     getPubLsn: curry(getPubLsn)(cookie, csrftoken, ip),
     getPubRequiredLsn: curry(getPubRequiredLsn)(cookie, csrftoken, ip),

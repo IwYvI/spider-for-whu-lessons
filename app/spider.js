@@ -9,7 +9,6 @@ log4js.configure("log4js.json");
 var logger = log4js.getLogger();
 
 var GetLesson = require("./getLesson.js");
-var query = require("./changeOption.js");
 
 function spider(ip) {
   this._init(ip);
@@ -47,36 +46,43 @@ spider.prototype = {
     // var buffer = new BufferHelper();
     request(option)
       .on('error', function (err) {
-        console.log(err);
         callback(false);
       })
-      // .on('data', function (data) {
-      //   buffer.concat(data);
-      // })
       .on('end', function () {
         callback(true);
       });
   },
   start: function (type, filePath) {
+    var _this = this;
     if (!this.getLesson) {
-      this.getLesson = GetLesson(this.token, this.csrftoken);
+      this.getLesson = GetLesson(this.cookie, this.csrftoken, this.ip);
     }
     if (!filePath) {
       logger.info("请输入正确的保存路径");
       return;
     }
+    type += "";
     switch (type) {
-      case 0:
+      case '0':
         var getPubRequiredLsn = this.getLesson.getPubRequiredLsn(filePath);
         getPubRequiredLsn.execute();
         break;
-      case 1:
-        var getPlanLsn = this.getLesson.getPlanLsn(filePath, query);
-        getPlanLsn.execute();
-        break;
-      case 2:
+      case '1':
         var getPubLsn = this.getLesson.getPubLsn(filePath);
         getPubLsn.execute();
+        break;
+      case '2':
+        this.requestResource(spider.ADDRESS.query, function (status, result) {
+
+          if(!status){
+            logger.error("获取专业课分类数据出错");
+            return;
+          }
+          var query = getQuery(result);
+
+          var getPlanLsn = _this.getLesson.getPlanLsn(filePath, query);
+          getPlanLsn.execute();
+        });
         break;
       default:
         logger.info("请输入正确的爬取类型");
@@ -107,7 +113,7 @@ spider.prototype = {
       .on("end", function () {
         fs.writeFile(imgName, bufferHelper.toBuffer(), function (err) {
           if (err) throw err;
-          console.log("img Saved !"); //文件被保存
+          logger.trace("验证码图片img.jpg已保存"); //文件被保存
           callback(true);
         });
       });
@@ -129,7 +135,6 @@ spider.prototype = {
     var buffer = new BufferHelper();
     request(option)
       .on('error', function (err) {
-        console.log(err);
         callback(false);
       })
       .on('data', function (data) {
@@ -142,10 +147,46 @@ spider.prototype = {
   }
 }
 
+/**
+ * 从changeOption.js文件中获取选择query
+ * 
+ * @param {any} jsdata
+ */
+function getQuery(jsdata) {
+  var query = [];
+
+  var subPattern = /var sub[\S\s]+'End'\)\);/g;
+  var gradePattern = /var grade[\S\s]+'End'\)\);/g;
+  var innerPattern = /('.+')/;
+
+  var subString = jsdata.match(subPattern)[0];
+  var gradeString = jsdata.match(gradePattern)[0];
+
+  var subRawArray = subString.match(/aClass\((.*)\)/g);
+  var gradeRawArray = gradeString.match(/aClass\((.*)\)/g);
+
+  // console.log(gradeRawArray);
+
+
+  subRawArray.forEach(function (el, index) {
+    var subData = el.match(innerPattern)[0].replace(/'/g, "").split(",");
+    if (subData && subData[2] != "End") {
+      gradeRawArray.forEach(function (el, index) {
+        var gradeData = el.match(innerPattern)[0].replace(/'/g, "").split(",");
+        if(gradeData && gradeData[2] != "End"){
+          query.push([subData[2], gradeData[2],subData[1] + gradeData[1]]);
+        }
+      });
+    }
+  });
+  return query;
+}
+
 spider.ADDRESS = {
   img: "/servlet/GenImg",
   login: "/servlet/Login",
-  main: "/stu/stu_index.jsp"
+  main: "/stu/stu_index.jsp",
+  query: "/js/changeOption.js"
 };
 
 
