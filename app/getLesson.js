@@ -1,12 +1,10 @@
 var curry = require("curry");
-var log4js = require('log4js');
-log4js.configure("log4js.json");
-var logger = log4js.getLogger();
 
 var DataSet = require('../module/dataSet.js');
 var RequestPool = require('../module/requestPool.js');
 var GetInformation = require('../module/getInformation.js');
 var Analyzer = require('../module/analyzer.js');
+var eventsHandler = require("../module/eventsHandler.js");
 
 
 function getLesson(option) {
@@ -48,7 +46,7 @@ getLesson.prototype = {
     }
   },
   execute: function () {
-    logger.info("开始爬取：" + this.description);
+    eventsHandler.emit('info','task', "开始爬取：" + this.description)
     for (var i = 0; i < this.info.length; i++) {
       this.info[i].execute();
     }

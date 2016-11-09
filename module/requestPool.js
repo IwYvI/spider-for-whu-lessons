@@ -1,9 +1,8 @@
 var request = require("request");
 var iconv = require("iconv-lite");
 var BufferHelper = require("bufferhelper");
-var log4js = require('log4js');
-log4js.configure("log4js.json");
-var logger = log4js.getLogger();
+
+var eventsHandler = require("./eventsHandler.js");
 
 /**
  * 请求池
@@ -37,19 +36,22 @@ requestPool.prototype = {
       var errorMsg = req.errorMsg;
       if (err) {
         errorMsg += "，服务器连接失败";
-        if(req.retryCount<5){
+        if (req.retryCount < 5) {
           this.push(req.options.url, req.errorMsg, req.callback, req.retryCount + 1);
-          errorMsg +="，第" + req.retryCount + "次重试";
+          errorMsg += "，第" + req.retryCount + "次重试";
         }
-        logger.error(errorMsg);
+        // logger.error(errorMsg);
+        eventsHandler.emit('error', 'task', errorMsg, err);
       } else {
         errorMsg = "session过期";
-        logger.error(errorMsg);
+        // logger.error(errorMsg);
+        eventsHandler.emit('error', 'task', errorMsg);
         this.abort();
         return;
       }
-    }else{
-      logger.trace("已完成----" + (this.finishCount / this.requests.length * 100).toFixed(2) + "%");
+    } else {
+      var parcent = (this.finishCount / this.requests.length * 100).toFixed(2);
+      eventsHandler.emit("progress", 'task', "已完成----" + parcent + "%", parcent);
     }
     this.execute();
   },
@@ -76,7 +78,8 @@ requestPool.prototype = {
   },
   // 终止所有请求
   abort: function () {
-    logger.info("终止爬取");
+    // logger.info("终止爬取");
+    eventsHandler.emit('info', 'task', "终止爬取");
     this.requests.forEach(function (el) {
       if (el.isStarted && !el.isFinished && el.request) {
         el.request.abort();
@@ -115,7 +118,7 @@ requestPool.prototype = {
         newRequest.request = r;
 
       } else if (this.queueCount <= 0 && this.requests.length > 0) {
-        logger.info("爬取完成");
+        eventsHandler.emit('finish', 'task', '爬取完成');
         this.finishCallback();
       }
     }

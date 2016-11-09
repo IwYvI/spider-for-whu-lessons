@@ -3,8 +3,9 @@ var DataSet = require("./module/dataSet.js");
 var cmd = require("./cmd.js");
 
 // var getLesson = GetLesson(
-// 	"JSESSIONID=414D2120E23841B4C9C04A6B24C041D9.tomcat2",
-// 	"1bd32be5-dd71-3410-91d0-a3e9a7ea245"
+// 	"JSESSIONID=4BF5A28E566DAE118DAC353CB2B8E38A.tomcat2",
+// 	"440c8bf9-7bba-3035-8b86-e756f0488b18",
+//   "210.42.121.132"
 // );
 
 // var getPubRequiredLsn = getLesson.getPubRequiredLsn("output/pubrequiredlsn.json");
@@ -22,6 +23,6 @@ var cmd = require("./cmd.js");
 
 
 cmd({
-  userid: "",
-  password: ""
+  userid: "2014302580029",
+  password: "19950816"
 }).execute();

@@ -1,7 +1,5 @@
 var fs = require("fs");
-var log4js = require('log4js');
-log4js.configure("log4js.json");
-var logger = log4js.getLogger();
+var eventsHandler = require("./eventsHandler.js");
 
 /**
  * 数据集
@@ -69,9 +67,11 @@ dataSet.prototype = {
   _saveFile: function (fileName, content) {
     fs.writeFile(fileName, content, function (err) {
       if (err) {
-        logger.error(err.toString());
+        eventsHandler.emit('error', 'file', '文件保存失败', err)
+        
       }
-      logger.info(fileName + "文件已保存");
+      eventsHandler.emit('info', 'file', fileName + '文件保存成功');
+      // logger.info(fileName + "文件已保存");
     })
   },
   _getFileName: function(fileName, extension){
@@ -100,8 +100,8 @@ dataSet.prototype = {
 dataSet.importJson = function (fileName, callback) {
   fs.readFile(fileName, 'utf-8', function (err, data) {
     if (err) {
-      // console.log("can not read " + fileName);
-      logger.error("无法读取" + fileName);
+      // logger.error("无法读取" + fileName);
+      eventsHandler.emit('error', 'file', "无法读取" + fileName, err);
     } else {
       var fileData = JSON.parse(data);
       var fileContent;
@@ -113,7 +113,8 @@ dataSet.importJson = function (fileName, callback) {
         fileContent = fileData[key];
       }
       if (fileContent.length == 0) {
-        logger.warn("无数据");
+        // logger.warn("无数据");
+        eventsHandler.emit('warn', 'file', '无数据');
       } else {
         for (key in fileContent[0]) {
           newTemplate[key] = "";
@@ -123,7 +124,8 @@ dataSet.importJson = function (fileName, callback) {
       fileContent.forEach(function (el) {
         newDataSet.add(el);
       });
-      logger.info("文件读取成功");
+      // logger.info("文件读取成功");
+      eventsHandler.emit('info','file', "文件读取成功");
       if (callback) {
         callback(newDataSet);
       }

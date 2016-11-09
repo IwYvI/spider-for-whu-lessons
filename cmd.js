@@ -2,17 +2,14 @@ var log4js = require('log4js');
 log4js.configure("log4js.json");
 var logger = log4js.getLogger();
 var prompt = require('prompt');
-var cheerio = require("cheerio");
 
 var Spider = require("./app/spider.js");
+var eventsHandler = require("./module/eventsHandler.js");
 
 var ip, userid, password, xdvfb, spider;
 
 function cmd(option) {
-  ip = option.ip || function () {
-    logger.warn("没有配置ip，使用默认值132");
-    return "210.42.121.132";
-  }();
+  ip = option.ip || "";
   userid = option.userid || function () {
     logger.warn("没有配置账号，进入游客模式");
     return "";
@@ -20,13 +17,30 @@ function cmd(option) {
   password = option.password || "";
   xdvfb = "";
   spider = new Spider(ip);
+  eventsHandler.addEventHandle({
+    info: function(target, msg, data){
+      logger.info(target + ":" + msg);
+    },
+    error: function(target, msg, data){
+      logger.error(target + ":" + msg + (data ? ". Error:" + data.toString() : ""));
+    },
+    warn: function(target, msg, data){
+      logger.warn(target + ":" + msg);
+    },
+    progress: function(target, msg, data){
+      logger.trace(msg);
+    },
+    finish: function(target, msg, data){
+      logger.info(target + ":" + msg);
+      if(target == "task"){
+        main();
+      }
+    }
+  })
   return {
     execute: function () {
-      login(function (status, result) {
+      login(function (status) {
         if (status) {
-          spider.setCsrftoken(result);
-          // console.log(spider.cookie);
-          // console.log(spider.csrftoken);
           main();
         }
       });
@@ -41,32 +55,10 @@ function login(callback) {
         xdvfb = result;
         spider.login(userid, password, xdvfb, function (status) {
           if (!status) {
-            logger.error("登陆时连接服务器出错");
-            return;
+            login(callback);
+          } else {
+            callback(true);
           }
-          spider.requestResource(Spider.ADDRESS.main, function (status, result) {
-            if (!status) {
-              logger.error("获取首页信息时连接服务器出错");
-              return;
-            }
-            var $ = cheerio.load(result);
-            if (result.indexOf("csrftoken") == -1) {
-              var msg = $("#alertp").parent().text();
-              console.log(msg);
-              // logger.warn("某个地方出错，需要重新登陆");
-              login(callback);
-              return;
-            } else {
-              var tokenString = $("li#btn1").first().attr("onclick");
-              var tokenArray = tokenString.match(/(\w+)(-\w+)+/);
-              var token = "";
-              if (tokenArray) {
-                token = tokenArray[0];
-              }
-              logger.info("登陆成功");
-              callback(true, token);
-            }
-          })
         })
       });
     }
@@ -75,7 +67,7 @@ function login(callback) {
 
 function main() {
   var filePath = "output/";
-  input("请输入爬取类型（0：公选，1：公必，2：专业课）", function (result) {
+  input("请输入爬取类型（0：公选，1：公必，2：专业课，-1：退出）", function (result) {
     var type = result;
     switch (type) {
       case '0':
@@ -87,13 +79,15 @@ function main() {
       case '2':
         filePath += "planlsn.json";
         break;
+      case '-1':
+        return;
       default:
         logger.warn("请输入正确的类型");
         main();
         return;
     }
     input("请输入保存路径及文件名，默认为" + filePath, function (result) {
-      if(result){
+      if (result) {
         filePath = result;
       }
       spider.start(type, filePath);
