@@ -2,6 +2,7 @@ var log4js = require('log4js');
 log4js.configure("log4js.json");
 var logger = log4js.getLogger();
 var prompt = require('prompt');
+var fs = require("fs");
 
 var Spider = require("./app/spider.js");
 var eventsHandler = require("./module/eventsHandler.js");
@@ -18,25 +19,25 @@ function cmd(option) {
   xdvfb = "";
   spider = new Spider(ip);
   eventsHandler.addEventHandle({
-    info: function(target, msg, data){
+    info: function (target, msg, data) {
       logger.info(target + ":" + msg);
     },
-    error: function(target, msg, data){
+    error: function (target, msg, data) {
       logger.error(target + ":" + msg + (data ? ". Error:" + data.toString() : ""));
     },
-    warn: function(target, msg, data){
+    warn: function (target, msg, data) {
       logger.warn(target + ":" + msg);
     },
-    progress: function(target, msg, data){
+    progress: function (target, msg, data) {
       logger.trace(msg);
     },
-    finish: function(target, msg, data){
+    finish: function (target, msg, data) {
       logger.info(target + ":" + msg);
-      if(target == "task"){
+      if (target == "task") {
         main();
       }
     }
-  })
+  });
   return {
     execute: function () {
       login(function (status) {
@@ -49,19 +50,26 @@ function cmd(option) {
 }
 
 function login(callback) {
-  spider.requestImg(function (r) {
-    if (r) {
-      input("请输入验证码，图片存在目录下", function (result) {
-        xdvfb = result;
-        spider.login(userid, password, xdvfb, function (status) {
-          if (!status) {
-            login(callback);
-          } else {
-            callback(true);
-          }
-        })
+  spider.requestImg(function (status, img) {
+    if (status) {
+      fs.writeFile("img.jpg", img, function (err) {
+        if (err) {
+          logger.error("验证码图片保存失败");
+          return;
+        }
+        logger.info("验证码图片img.jpg已保存");
+        input("请输入验证码，图片存在目录下", function (result) {
+          xdvfb = result;
+          spider.login(userid, password, xdvfb, function (status) {
+            if (!status) {
+              login(callback);
+            } else {
+              callback(true);
+            }
+          });
+        });
       });
-    }
+    };
   })
 }
 

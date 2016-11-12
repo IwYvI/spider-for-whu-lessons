@@ -1,7 +1,6 @@
 var request = require("request");
 var iconv = require("iconv-lite");
 var BufferHelper = require("bufferhelper");
-var fs = require("fs");
 var cheerio = require("cheerio");
 var MD5 = require("crypto-js/md5");
 
@@ -26,8 +25,42 @@ spider.prototype = {
     this.csrftoken = "";
     this.getLesson = null;
   },
+  _getCsrftoken: function (data) {
+    var $ = cheerio.load(data);
+
+    var appendToken = data.match(/appendToken\('((\w+)(-\w+)+)'\)/);
+    var csrftoken = "";
+
+    if (data.indexOf("csrftoken") != -1) {
+      var tokenString = $("li#btn1").first().attr("onclick");
+      var tokenArray = tokenString.match(/(\w+)(-\w+)+/);
+      if (tokenArray) {
+        csrftoken = tokenArray[0];
+      }
+      this.setCsrftoken(csrftoken);
+      eventsHandler.emit("info", "spider", "登陆成功");
+      return true;
+    } else if (appendToken) {
+      csrftoken = appendToken[1];
+      eventsHandler.emit("warn", "spider", "游客模式日常抽风");
+      return false;
+    } else {
+      var msgArray = data.match(/>(\W+)<label id="alertp">/);
+      var msgString = "";
+      if (msgArray && msgArray[1]) {
+        msgString = msgArray[1];
+      } else {
+        msgString = "登陆错误，需要重新登陆";
+      }
+      eventsHandler.emit("error", "spider", msgString);
+      return false;
+    }
+  },
   setIp: function (ip) {
     this.ip = ip;
+  },
+  setCookie: function(cookie){
+    this.cookie = cookie;
   },
   setCsrftoken: function (csrftoken) {
     this.csrftoken = csrftoken;
@@ -61,30 +94,7 @@ spider.prototype = {
       })
       .on('end', function () {
         var result = iconv.decode(buffer.toBuffer(), 'gb2312');
-        var $ = cheerio.load(result);
-
-        if (result.indexOf("csrftoken") == -1) {
-          var msgArray = result.match(/>(\W+)<label id="alertp">/);
-          var msgString = "";
-          if (msgArray && msgArray[1]) {
-            msgString = msgArray[1];
-          } else {
-            msgString = "登陆错误，需要重新登陆"
-          }
-          eventsHandler.emit("error", "spider", msgString);
-          callback(false);
-          return;
-        } else {
-          var tokenString = $("li#btn1").first().attr("onclick");
-          var tokenArray = tokenString.match(/(\w+)(-\w+)+/);
-          var token = "";
-          if (tokenArray) {
-            token = tokenArray[0];
-          }
-          _this.setCsrftoken(token);
-          eventsHandler.emit("info", "spider", "登陆成功");
-          callback(true);
-        }
+        callback(_this._getCsrftoken(result));
       });
   },
   start: function (type, filePath) {
@@ -93,7 +103,7 @@ spider.prototype = {
       this.getLesson = GetLesson(this.cookie, this.csrftoken, this.ip);
     }
     if (!filePath) {
-      eventsHandler.emit('info', 'spider', '请输入正确的保存路径');
+      eventsHandler.emit('warn', 'spider', '请输入正确的保存路径');
       return;
     }
     type += "";
@@ -113,6 +123,7 @@ spider.prototype = {
             eventsHandler.emit('error', 'spider', '获取专业课分类数据出错');
             return;
           }
+          eventsHandler.emit('info', 'spider', '获取专业课分类数据完成');
           var query = getQuery(result);
 
           var getPlanLsn = _this.getLesson.getPlanLsn(filePath, query);
@@ -126,7 +137,6 @@ spider.prototype = {
   requestImg: function (callback) {
     var _this = this;
     var url = "http://" + this.ip + spider.ADDRESS.img;
-    var imgName = "img.jpg";
 
     var bufferHelper = new BufferHelper();
     request({
@@ -140,17 +150,14 @@ spider.prototype = {
         callback(false);
       })
       .on("response", function (response) {
-        _this.cookie = response.headers['set-cookie'][0].split(';')[0];
+        _this.setCookie(response.headers['set-cookie'][0].split(';')[0]);
       })
       .on("data", function (data) {
         bufferHelper.concat(data);
       })
       .on("end", function () {
-        fs.writeFile(imgName, bufferHelper.toBuffer(), function (err) {
-          if (err) throw err;
-          eventsHandler.emit('info', 'spider', '验证码图片img.jpg已保存');
-          callback(true);
-        });
+        var result = bufferHelper.toBuffer();
+        callback(true, result);
       });
   },
   requestResource: function (addr, callback) {

@@ -23,6 +23,6 @@ var cmd = require("./cmd.js");
 
 
 cmd({
-  userid: "2014302580029",
-  password: "19950816"
+  userid: "",
+  password: ""
 }).execute();

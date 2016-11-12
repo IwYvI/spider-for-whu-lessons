@@ -2,7 +2,7 @@
   "name": "spider-for-whu-lessons",
   "version": "0.0.1",
   "description": "A spider for whu, which can get all the lessons' information",
-  "main": "app.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

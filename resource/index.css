@@ -1,0 +1,192 @@
+*{
+  margin: 0;
+  bottom: 0;
+  padding: 0;
+}
+
+html, body{
+  font-size: 16px;
+  font-family: "微软雅黑";
+  overflow: hidden;
+}
+
+input:focus{
+  outline: 0;
+}
+
+#main{
+  width: 100%;
+  height: 100%;
+}
+
+header{
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+footer{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: #eeeeee;
+}
+#output-title{
+  font-size: 0.8rem;
+  padding: 5px 10px;
+}
+#output{
+  width: 100%;
+  height: 75px;
+  border-top: 1px solid #cccccc;
+  box-sizing: border-box;
+  padding: 5px 10px;
+}
+.output-list{
+  overflow: hidden;
+  white-space: nowrap;
+}
+.output-list.info{
+  color: black;
+}
+.output-list.warn{
+  color: darkorange;
+}
+.output-list.error{
+  color: red;
+}
+.output-list.hint{
+  color: darkslateblue;
+}
+
+.result{
+  display: none;
+}
+.login-success .login{
+  display: none;
+}
+.login-success .result{
+  display: block;
+}
+
+.main-content{
+  width: 100%;
+}
+
+.login-form{
+  width: 350px;
+  margin: auto;
+}
+
+.detail-form{
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #eeeeee;
+}
+
+.login-input{
+  width: 100%;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.login-input:after{
+  display: block;
+  clear: both;
+  content: "";
+}
+.login-input span{
+  display: block;
+  width: 100px;
+  float: left;
+  text-align: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+.login-input input{
+  display: block;
+  float: right;
+  width: 250px;
+  box-sizing: border-box;
+  border: 0;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #cccccc;
+  transition: 0.6s all ease;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.login-input input:focus{
+  border-bottom: 2px solid #eace3b;
+}
+
+#ip-select{
+  width: 250px;
+  font-size: 1.1rem;
+}
+
+#codeImg{
+  margin: auto;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.btn{
+  cursor: pointer;
+  width: 100px;
+  height: 35px;
+  margin: auto;
+  background-color: #e34e8a;
+  transition: 0.6s all ease;
+  color: #ffffff;
+  font-size: 1.2rem;
+  text-align: center;
+  line-height: 35px;
+}
+.btn:hover{
+  background-color: #e67eaa;
+}
+.btn:active{
+  background-color: #d33e7a;
+}
+
+.hint{
+  font-size: 0.8rem;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.result-btn{
+  width: 150px;
+  margin-bottom: 20px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.result-btn.disabled{
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.result-btn.active{
+  background-color: blue;
+  cursor: not-allowed;
+}
+
+.progress-bar{
+  width: 100%;
+  height: 4px;
+  background-color: #dddddd;
+  margin-bottom: 20px;
+}
+#progress-bar-inner{
+  height: 100%;
+  width: 0;
+  transition: 0.6s all ease;
+  display: block;
+  background-color: darkred;
+}

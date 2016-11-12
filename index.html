@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <title>奇怪的爬虫</title>
+  <link rel="stylesheet" type="" href="resource/index.css">
+</head>
+
+<body>
+  <div id="main">
+    <header>
+      <h1>奇怪的爬虫</h1>
+    </header>
+    <div class="main-content login">
+      <div class="login-form">
+        <div class="login-input login-select">
+          <span>IP选择</span>
+          <select id="ip-select">
+            <option value="210.42.121.132" selected>132</option>
+            <option value="210.42.121.133">133</option>
+            <option value="210.42.121.241">241</option>
+          </select>
+        </div>
+        <div class="login-input">
+          <span>用户名</span>
+          <input type="text" id="username" name="" value="">
+        </div>
+        <div class="login-input">
+          <span>密码</span>
+          <input type="password" id="password" name="" value="">
+        </div>
+        <img id="codeImg" alt="">
+        <div class="login-input">
+          <span>验证码</span>
+          <input type="text" id="codetext" name="" value="">
+        </div>
+        <div class="btn" id="login-btn">登陆</div>
+      </div>
+      <div class="login-form detail-form">
+        <div class="hint">如果上面登陆一直抽风可以浏览器登录以后获取相应的值</div>
+        <div class="login-input">
+          <span>cookie</span>
+          <input type="text" id="cookie" placeholder="JSESSIONID=">
+        </div>
+        <div class="login-input">
+          <span>csrftoken</span>
+          <input type="text" id="csrftoken">
+        </div>
+        <div class="btn" id="enter-btn">进入</div>
+      </div>
+    </div>
+    <div class="result">
+      <div class="btn result-btn" data-type="0">公选课</div>
+      <div class="btn result-btn" data-type="1">公必课</div>
+      <div class="btn result-btn" data-type="2">专业课</div>
+      <div class="progress-bar">
+        <span id="progress-bar-inner"></span>
+      </div>
+      <div class="btn result-btn">退出登陆</div>
+    </div>
+    <footer>
+      <div id="output-title">应用信息</div>
+      <div id="output">
+        <div class="output-list" id="output-list-1"></div>
+        <div class="output-list" id="output-list-2"></div>
+        <div class="output-list" id="output-list-3"></div>
+      </div>
+    </footer>
+  </div>
+  <script src="resource/index.js"></script>
+</body>
+
+</html>

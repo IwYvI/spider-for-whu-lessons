@@ -79,7 +79,7 @@ requestPool.prototype = {
   // 终止所有请求
   abort: function () {
     // logger.info("终止爬取");
-    eventsHandler.emit('info', 'task', "终止爬取");
+    eventsHandler.emit('finish', 'task', "终止爬取");
     this.requests.forEach(function (el) {
       if (el.isStarted && !el.isFinished && el.request) {
         el.request.abort();
