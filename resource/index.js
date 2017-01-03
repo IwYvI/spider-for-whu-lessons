@@ -1,5 +1,8 @@
 var Spider = require("./app/spider.js");
 var eventsHandler = require("./module/eventsHandler.js");
+var log4js = require('log4js');
+log4js.configure("log4js.json");
+var logger = log4js.getLogger();
 
 var fs = require("fs");
 
@@ -53,7 +56,8 @@ eventsHandler.addEventHandle({
   error: function (target, msg, data) {
     outputPush("error", target + ":" + msg + (data ? ". Error:" + data.toString() : ""));
     console.log(target + ":" + msg);
-    if(target == "spider" && taskStatus){
+    logger.error(target + ":" + msg + (data ? ". Error:" + data.toString() : ""));
+    if (target == "spider" && taskStatus) {
       taskFinish();
     }
   },
@@ -92,6 +96,10 @@ enterBtn.addEventListener("click", function (e) {
     return function (e) {
       e.preventDefault();
       if (element.classList.contains("disabled") || element.classList.contains("active")) {
+        return;
+      }
+      if (type == -1) {
+        logout();
         return;
       }
       taskStart(type);
@@ -159,13 +167,13 @@ function enter() {
   changeLoginStatus(true);
 }
 
-function logout(){
+function logout() {
   changeLoginStatus(false);
   getCodeImg();
 }
 
 function taskStart(type) {
-  if(!loginStatus){
+  if (!loginStatus) {
     outputPush("info", "请重新登陆");
     logout();
     return;
@@ -202,8 +210,8 @@ function taskStart(type) {
 
 function taskFinish() {
   [].forEach.call(resultBtns, function (ele) {
-      ele.classList.remove("disabled");
-      ele.classList.remove("active");
+    ele.classList.remove("disabled");
+    ele.classList.remove("active");
   });
   progressBarInner.style.width = "0";
   taskStatus = false;

@@ -15,9 +15,14 @@ getLesson.prototype = {
   _init: function (option) {
     var _this = this;
     this.dataSet = new DataSet(option.name, option.template);
+
+    if (!option.thread && option.thread < 5) {
+      option.thread = 5
+    }
     this.requestPool = new RequestPool(option.cookie, option.thread, function () {
       option.finishCallback(_this.dataSet);
     });
+
     this.analyzer = new Analyzer(option.selector, this.dataSet);
     this.description = option.description;
     this.info = [];
@@ -46,7 +51,7 @@ getLesson.prototype = {
     }
   },
   execute: function () {
-    eventsHandler.emit('info','task', "开始爬取：" + this.description)
+    eventsHandler.emit('info', 'task', "开始爬取：" + this.description)
     for (var i = 0; i < this.info.length; i++) {
       this.info[i].execute();
     }
@@ -56,7 +61,7 @@ getLesson.prototype = {
 /**
  * 公选课部分
  */
-var getPubLsn = function (cookie, csrftoken, ip, fileName) {
+var getPubLsn = function (cookie, csrftoken, ip, thread, fileName) {
   return new getLesson({
     name: "lsn_pub_optional",
     template: {
@@ -72,7 +77,7 @@ var getPubLsn = function (cookie, csrftoken, ip, fileName) {
       kind: String,
     },
     cookie: cookie,
-    thread: 10,
+    thread: thread,
     selector: [
       "className",
       "point",
@@ -103,7 +108,7 @@ var getPubLsn = function (cookie, csrftoken, ip, fileName) {
 /**
  * 公共必修部分
  */
-var getPubRequiredLsn = function (cookie, csrftoken, ip, fileName) {
+var getPubRequiredLsn = function (cookie, csrftoken, ip, thread, fileName) {
   return new getLesson({
     name: "lsn_pub_required",
     template: {
@@ -120,7 +125,7 @@ var getPubRequiredLsn = function (cookie, csrftoken, ip, fileName) {
       class: String,
     },
     cookie: cookie,
-    thread: 10,
+    thread: thread,
     selector: [
       "",
       "className",
@@ -153,7 +158,7 @@ var getPubRequiredLsn = function (cookie, csrftoken, ip, fileName) {
 /**
  * 专业课部分
  */
-var getPlanLsn = function (cookie, csrftoken, ip, fileName, query) {
+var getPlanLsn = function (cookie, csrftoken, ip, thread, fileName, query) {
   return new getLesson({
     name: "lsn_plan",
     template: {
@@ -171,7 +176,7 @@ var getPlanLsn = function (cookie, csrftoken, ip, fileName, query) {
       grade: String,
     },
     cookie: cookie,
-    thread: 10,
+    thread: thread,
     selector: [
       "className",
       "status",
@@ -202,10 +207,10 @@ var getPlanLsn = function (cookie, csrftoken, ip, fileName, query) {
   });
 }
 
-module.exports = function (cookie, csrftoken, ip) {
+module.exports = function (cookie, csrftoken, ip, thread) {
   return {
-    getPubLsn: curry(getPubLsn)(cookie, csrftoken, ip),
-    getPubRequiredLsn: curry(getPubRequiredLsn)(cookie, csrftoken, ip),
-    getPlanLsn: curry(getPlanLsn)(cookie, csrftoken, ip),
+    getPubLsn: curry(getPubLsn)(cookie, csrftoken, ip, thread),
+    getPubRequiredLsn: curry(getPubRequiredLsn)(cookie, csrftoken, ip, thread),
+    getPlanLsn: curry(getPlanLsn)(cookie, csrftoken, ip, thread),
   }
 }

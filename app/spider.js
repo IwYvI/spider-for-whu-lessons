@@ -24,6 +24,7 @@ spider.prototype = {
     this.cookie = "";
     this.csrftoken = "";
     this.getLesson = null;
+    this.thread = 20;
   },
   _getCsrftoken: function (data) {
     var $ = cheerio.load(data);
@@ -42,7 +43,7 @@ spider.prototype = {
       return true;
     } else if (appendToken) {
       csrftoken = appendToken[1];
-      eventsHandler.emit("warn", "spider", "游客模式日常抽风");
+      eventsHandler.emit("warn", "spider", "游客模式出错中");
       return false;
     } else {
       var msgArray = data.match(/>(\W+)<label id="alertp">/);
@@ -64,6 +65,9 @@ spider.prototype = {
   },
   setCsrftoken: function (csrftoken) {
     this.csrftoken = csrftoken;
+  },
+  setThread: function(thread){
+    this.thread = thread;
   },
   login: function (userid, password, xdvfb, callback) {
     var _this = this;
@@ -100,7 +104,7 @@ spider.prototype = {
   start: function (type, filePath) {
     var _this = this;
     if (!this.getLesson) {
-      this.getLesson = GetLesson(this.cookie, this.csrftoken, this.ip);
+      this.getLesson = GetLesson(this.cookie, this.csrftoken, this.ip, this.thread);
     }
     if (!filePath) {
       eventsHandler.emit('warn', 'spider', '请输入正确的保存路径');
