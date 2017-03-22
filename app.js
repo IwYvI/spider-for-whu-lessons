@@ -1,6 +1,7 @@
 var GetLesson = require("./app/getLesson.js");
 var DataSet = require("./module/dataSet.js");
 var cmd = require("./cmd.js");
+var eventsHandler = require("./module/eventsHandler.js");
 
 // var getLesson = GetLesson(
 // 	"JSESSIONID=4BF5A28E566DAE118DAC353CB2B8E38A.tomcat2",
@@ -17,12 +18,31 @@ var cmd = require("./cmd.js");
 // var getPubLsn = getLesson.getPubLsn("output/publsn.json");
 // getPubLsn.execute();
 
-// DataSet.importJson("output/bba.json", function (dataSet) {
-// 	dataSet.exportSql("output/ppp.sql");
+
+
+// eventsHandler.addEventHandle({
+//   info: function (target, msg, data) {
+//     console.info(target + ":" + msg);
+//   },
+//   error: function (target, msg, data) {
+//     console.error(target + ":" + msg + (data ? ". Error:" + data.toString() : ""));
+//   },
+//   warn: function (target, msg, data) {
+//     console.warn(target + ":" + msg);
+//   },
+//   progress: function (target, msg, data) {
+//     console.trace(msg);
+//   },
+//   finish: function (target, msg, data) {
+//     console.info(target + ":" + msg);
+//   }
+// }); 
+// DataSet.importJson("output/publsn[2017-2-16 17-09].json", function (dataSet) {
+// 	dataSet.exportSql("output/publsn[2017-2-16 17-09].sql");
 // });
 
 
-cmd({
-  userid: "",
-  password: ""
-}).execute();
+// cmd({
+//   userid: "",
+//   password: ""
+// }).execute();

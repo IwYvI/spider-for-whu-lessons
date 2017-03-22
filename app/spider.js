@@ -60,13 +60,13 @@ spider.prototype = {
   setIp: function (ip) {
     this.ip = ip;
   },
-  setCookie: function(cookie){
+  setCookie: function (cookie) {
     this.cookie = cookie;
   },
   setCsrftoken: function (csrftoken) {
     this.csrftoken = csrftoken;
   },
-  setThread: function(thread){
+  setThread: function (thread) {
     this.thread = thread;
   },
   login: function (userid, password, xdvfb, callback) {

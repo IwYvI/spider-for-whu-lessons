@@ -21,6 +21,7 @@ analyzer.prototype = {
         if (index !== 0) {
           var count = 0;
           var detail = {};
+          
           $(this).children().each(function () {
             var text = $(this).text().replace(/[\r\n\t\/ ]/g, "");
             if (!text || text == " ") {
@@ -30,12 +31,17 @@ analyzer.prototype = {
             // 若selector为对象则取子元素的内容
             if (typeof (kind) == "object") {
               if (kind[1] && kind[1] === true) {
-                $(this).children().each(function () {
-                  text = $(this).text().replace(/[\r\n\t\/ ]/g, "");
-                  if (!text) {
-                    text = "NULL";
-                  }
-                });
+                var attrTitle = $(this).attr("title"); // 分析弹框中多条时间的部分
+                if (!attrTitle) {
+                  $(this).children().each(function () {
+                    text = $(this).text().replace(/[\r\n\t\/ ]/g, "");
+                    if (!text) {
+                      text = "NULL";
+                    }
+                  });
+                }else{
+                  text = attrTitle.replace(/[\r\n\t\/ ]/g, "");
+                }
               }
               detail[kind[0]] = text;
             } else {
@@ -43,6 +49,7 @@ analyzer.prototype = {
             }
             count++;
           });
+
           _this.dataSet.add(detail);
         }
       });
