@@ -39,6 +39,8 @@ requestPool.prototype = {
         if (req.retryCount < 5) {
           this.push(req.options.url, req.errorMsg, req.callback, req.retryCount + 1);
           errorMsg += "，第" + req.retryCount + "次重试";
+        }else{
+          errorMsg += "重试失败！"; 
         }
         // logger.error(errorMsg);
         eventsHandler.emit('error', 'task', errorMsg, err);

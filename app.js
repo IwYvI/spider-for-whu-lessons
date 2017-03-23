@@ -37,9 +37,10 @@ var eventsHandler = require("./module/eventsHandler.js");
 //     console.info(target + ":" + msg);
 //   }
 // }); 
-// DataSet.importJson("output/publsn[2017-2-16 17-09].json", function (dataSet) {
-// 	dataSet.exportSql("output/publsn[2017-2-16 17-09].sql");
-// });
+
+DataSet.importJson("output/planlsn[2017-1-3 20-37].json", function (dataSet) {
+	dataSet.exportXml("output/planlsn[2017-1-3 20-37].xml");
+});
 
 
 // cmd({

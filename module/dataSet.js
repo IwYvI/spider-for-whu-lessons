@@ -1,5 +1,6 @@
 var fs = require("fs");
 var eventsHandler = require("./eventsHandler.js");
+var X2JS = require("x2js");
 
 /**
  * 数据集
@@ -95,6 +96,13 @@ dataSet.prototype = {
   exportSql: function (fileName, tableName) {
     this._saveFile(this._getFileName(fileName, "sql"), this._getSql(tableName ? tableName : this.name));
   },
+  exportXml: function(fileName) {
+    var x2js = new X2JS();
+    // var json = {};
+    // json.spider = JSON.parse(this._getString());
+    var result = x2js.js2xml(JSON.parse(this._getString()));
+    this._saveFile(this._getFileName(fileName, "xml"), result);
+  }
 }
 // 导入json
 dataSet.importJson = function (fileName, callback) {
