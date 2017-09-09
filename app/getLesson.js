@@ -1,7 +1,7 @@
 var curry = require("curry");
 
 var DataSet = require('../module/dataSet.js');
-var RequestPool = require('../module/requestPool.js');
+var RequestPool = require('../module/requestPoolInterceptor.js');
 var GetInformation = require('../module/getInformation.js');
 var Analyzer = require('../module/analyzer.js');
 var eventsHandler = require("../module/eventsHandler.js");

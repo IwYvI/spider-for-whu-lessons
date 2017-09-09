@@ -24,7 +24,7 @@ spider.prototype = {
     this.cookie = "";
     this.csrftoken = "";
     this.getLesson = null;
-    this.thread = 20;
+    this.thread = 10;
   },
   _getCsrftoken: function (data) {
     var $ = cheerio.load(data);
@@ -76,7 +76,7 @@ spider.prototype = {
       url: "http://" + this.ip + spider.ADDRESS.login,
       headers: {
         "Cookie": this.cookie,
-        "Connection": "keep-alive"
+        "Connection": "close"
       },
       form: {
         "id": userid,

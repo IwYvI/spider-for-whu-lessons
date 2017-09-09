@@ -101,6 +101,7 @@ dataSet.prototype = {
     // var json = {};
     // json.spider = JSON.parse(this._getString());
     var result = x2js.js2xml(JSON.parse(this._getString()));
+    result = `<?xml version="1.0" encoding="UTF-8" ?><app>${result}</app>`
     this._saveFile(this._getFileName(fileName, "xml"), result);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "spider-for-whu-lessons",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A spider for whu, which can get all the lessons' information",
   "main": "index.html",
   "scripts": {
@@ -22,14 +22,14 @@
   "homepage": "https://github.com/IwYvI/spider-for-whu-lessons#readme",
   "dependencies": {
     "bufferhelper": "^0.2.1",
-    "cheerio": "^0.22.0",
-    "crypto-js": "^3.1.8",
+    "cheerio": "^1.0.0-rc.2",
+    "crawler": "^1.0.5",
+    "crypto-js": "^3.1.9-1",
     "curry": "^1.2.0",
     "events": "^1.1.1",
-    "iconv-lite": "^0.4.13",
-    "log4js": "^0.6.38",
+    "iconv-lite": "^0.4.18",
+    "log4js": "0.6.38",
     "prompt": "^1.0.0",
-    "request": "^2.75.0",
     "x2js": "^3.1.0"
   }
 }

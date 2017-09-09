@@ -52,8 +52,8 @@ requestPool.prototype = {
         return;
       }
     } else {
-      var parcent = (this.finishCount / this.requests.length * 100).toFixed(2);
-      eventsHandler.emit("progress", 'task', "已完成----" + parcent + "%", parcent);
+      var percent = (this.finishCount / this.requests.length * 100).toFixed(2);
+      eventsHandler.emit("progress", 'task', "已完成----" + percent + "%", percent);
     }
     this.execute();
   },
@@ -68,7 +68,7 @@ requestPool.prototype = {
         url: url,
         headers: {
           'Cookie': this.cookie,
-          'Connection': 'keep-alive'
+          'Connection': 'close'
         }
       },
       errorMsg: errorMsg,

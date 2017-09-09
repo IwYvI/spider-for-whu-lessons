@@ -38,8 +38,8 @@ var eventsHandler = require("./module/eventsHandler.js");
 //   }
 // }); 
 
-DataSet.importJson("output/planlsn[2017-1-3 20-37].json", function (dataSet) {
-	dataSet.exportXml("output/planlsn[2017-1-3 20-37].xml");
+DataSet.importJson("output/publsn[2017-9-2 9-36].json", function (dataSet) {
+	dataSet.exportXml("output/publsn[2017-9-2 9-36].xml");
 });
 
 
